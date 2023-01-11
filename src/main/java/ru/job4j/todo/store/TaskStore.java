@@ -1,6 +1,5 @@
 package ru.job4j.todo.store;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-//@AllArgsConstructor
 @Repository
 @RequiredArgsConstructor
 public class TaskStore {
@@ -113,7 +111,7 @@ public class TaskStore {
                         "from Task as i where i.id = :fId", Task.class)
                         .setParameter("fId", id);
                 session.getTransaction().commit();
-                result = query.uniqueResultOptional());
+                result = query.uniqueResultOptional();
             } catch (Exception e) {
                 session.getTransaction().rollback();
             }
