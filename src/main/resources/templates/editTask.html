@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="To Do - ежедневник.">
+  <meta name="author" content="Nike Z.">
+  <meta name="generator" content="Nike Z.">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+
+  <title>To Do</title>
+</head>
+<body>
+<form method="post" action="/editTask">
+  <header>
+    <div class="navbar navbar-dark bg-dark shadow-sm">
+      <div class="container">
+        <div class="navbar-brand d-flex align-items-center">
+          To Do
+        </div>
+        <a  class="navbar-brand d-flex align-items-center" href="/filterAll" th:if="${(session.filter=='done')||(session.filter=='new')}">
+          <div>
+            Все
+          </div>
+        </a>
+        <div class="navbar-brand d-flex align-items-center" th:if="${(session.filter!='done')&&(session.filter!='new')}">
+          Все
+        </div>
+        <a class="navbar-brand d-flex align-items-center" href="/filterDone" th:if="${(session.filter!=null)&&(session.filter!='done')}">
+          <div>
+            Выполненные
+          </div>
+        </a>
+        <div class="navbar-brand d-flex align-items-center" th:if="${(session.filter!=null)&&(session.filter=='done')}">
+          Выполненные
+        </div>
+        <a class="navbar-brand d-flex align-items-center" href="/filterNew"  th:if="${(session.filter!=null)&&(session.filter!='new')}">
+          <div>
+            Новые
+          </div>
+        </a>
+        <div class="navbar-brand d-flex align-items-center" th:if="${(session.filter!=null)&&(session.filter=='new')}">
+          Новые
+        </div>
+        <div class="navbar-brand d-flex align-items-center">
+          Добавить задание
+        </div>
+      </div>
+    </div>
+  </header>
+  <main>
+    <div class="container">
+      <div class="card" style="width: 100%">
+        <div class="card-header">
+          Создание новой задачи.
+        </div>
+        <div class="card-body">
+          <form th:action="@{/addTask}" method="POST" th:object="${task}">
+            <input type="hidden" name="id" th:field="*{id}">
+            <div class="form-group">
+              <label for="description">Описание задачи</label>
+              <input type="text" class="form-control" required name="description" id="description" th:field="*{description}">
+            </div>
+
+            <div class="form-group">
+              <label for="created1">Дата и время создания</label>
+              <!--<input type="datetime-local" class="form-control" required name="created" id="created" th:field="*{created}">-->
+              <label class="form-control" id="created1" th:text="*{created}"/>
+              <input type="hidden" name="created" id="created" th:field="*{created}">
+            </div>
+            <div class="form-group">
+              <label for="done">Статус</label>
+              <select name="done" id="done"  th:field="*{done}">
+                <option value="false">новое</option>
+                <option value="true">выполнено</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer class="text-muted py-5">
+    <div class="container">
+      <p class="float-end mb-1">
+        <a href="#">Наверх</a>
+      </p>
+      <p class="mb-1">Сервис To Do. &copy;2023 Nike Z. Использовал Bootstrap, Java, Spring boot, thymeleaf.</p>
+      <p class="mb-0">Предложения по работе - <a href="https://ekaterinburg.hh.ru/resume/a9f5ffddff01375f8a0039ed1f544d49736b74">посмотреть моё резюме</a> исходный текст проекта <a href="https://github.com/nikegreen/job4j_todo">перейти на проект</a>.</p>
+    </div>
+  </footer>
+</form>
+<script src="/bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>
