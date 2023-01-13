@@ -45,14 +45,7 @@ public class TaskStore {
         try (Session session = sf.openSession()) {
             try {
                 session.beginTransaction();
-                session.createQuery(
-                                "UPDATE Task SET description = :fDescription, "
-                                        + "created = :fCreated, done = :fDone WHERE id = :fId")
-                        .setParameter("fDescription", task.getDescription())
-                        .setParameter("fCreated", task.getCreated())
-                        .setParameter("fDone", task.isDone())
-                        .setParameter("fId", task.getId())
-                        .executeUpdate();
+                session.merge(task);
                 session.getTransaction().commit();
                 result = true;
             } catch (Exception e) {
@@ -70,12 +63,9 @@ public class TaskStore {
         boolean result = false;
         try (Session session = sf.openSession()) {
             try {
+                task.setDone(true);
                 session.beginTransaction();
-                session.createQuery(
-                                "UPDATE Task SET done = :fDone WHERE id = :fId")
-                        .setParameter("fDone", true)
-                        .setParameter("fId", task.getId())
-                        .executeUpdate();
+                session.merge(task);
                 session.getTransaction().commit();
                 result = true;
             } catch (Exception e) {
