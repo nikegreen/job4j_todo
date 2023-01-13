@@ -139,6 +139,10 @@ public class TaskStore {
         return result;
     }
 
+    /**
+     * Получить список задач где done == done
+     * @return List<Task>.
+     */
     public List<Task> findAllDone(boolean done) {
         List<Task> result = new ArrayList<>();
         try (Session session = sf.openSession()) {
