@@ -13,14 +13,13 @@
   <title>To Do</title>
 </head>
 <body>
-<form method="post" action="/addTask">
   <header>
     <div class="navbar navbar-dark bg-dark shadow-sm">
       <div class="container">
         <div class="navbar-brand d-flex align-items-center">
           To Do
         </div>
-        <a  class="navbar-brand d-flex align-items-center" href="/filterAll" th:if="${(session.filter=='done')||(session.filter=='new')}">
+        <a  class="navbar-brand d-flex align-items-center" href="/all" th:if="${(session.filter=='done')||(session.filter=='new')}">
           <div>
             Все
           </div>
@@ -28,7 +27,7 @@
         <div class="navbar-brand d-flex align-items-center" th:if="${(session.filter!='done')&&(session.filter!='new')}">
           Все
         </div>
-        <a class="navbar-brand d-flex align-items-center" href="/filterDone" th:if="${(session.filter!=null)&&(session.filter!='done')}">
+        <a class="navbar-brand d-flex align-items-center" href="/done" th:if="${(session.filter!=null)&&(session.filter!='done')}">
           <div>
             Выполненные
           </div>
@@ -36,7 +35,7 @@
         <div class="navbar-brand d-flex align-items-center" th:if="${(session.filter!=null)&&(session.filter=='done')}">
           Выполненные
         </div>
-        <a class="navbar-brand d-flex align-items-center" href="/filterNew"  th:if="${(session.filter!=null)&&(session.filter!='new')}">
+        <a class="navbar-brand d-flex align-items-center" href="/new"  th:if="${(session.filter!=null)&&(session.filter!='new')}">
           <div>
             Новые
           </div>
@@ -54,36 +53,30 @@
     <div class="container">
       <div class="card" style="width: 100%">
         <div class="card-header">
-          Создание новой задачи.
+          Редактирование новой задачи.
         </div>
         <div class="card-body">
-          <form method="POST" th:object="${task}">
+          <form th:action="@{/edit}" method="POST" th:object="${task}">
             <input type="hidden" name="id" th:field="*{id}">
             <div class="form-group">
-              <label for="description1">Описание задачи</label>
-              <label type="text" class="form-control" id="description1" th:text="*{description}"/>
-              <input type="hidden" name="description" id="description" th:field="*{description}">
+              <label for="description">Описание задачи</label>
+              <input type="text" class="form-control" required name="description" id="description" th:field="*{description}">
             </div>
 
             <div class="form-group">
               <label for="created1">Дата и время создания</label>
               <!--<input type="datetime-local" class="form-control" required name="created" id="created" th:field="*{created}">-->
-              <label type="text" class="form-control" id="created1" th:text="*{created}"/>
+              <label class="form-control" id="created1" th:text="*{created}"></label>>
               <input type="hidden" name="created" id="created" th:field="*{created}">
             </div>
             <div class="form-group">
-              <label for="done1">Статус</label>
-              <label name="done" id="done1"  th:if="*{done==false}">
-                новое
-              </label>
-              <label name="done" id="done1"  th:if="*{done==true}">
-                выполнено
-              </label>
-              <input type="hidden" name="done" id="done"  th:field="*{done}">
+              <label for="done">Статус</label>
+              <select name="done" id="done"  th:field="*{done}">
+                <option value="false">новое</option>
+                <option value="true">выполнено</option>
+              </select>
             </div>
-            <button type="submit" formaction="/doneTask" class="btn btn-primary">Выполнено</button>
-            <button type="submit" formaction="/formEditTask" class="btn btn-primary">Отредактировать</button>
-            <button type="submit" formaction="/deleteTask" class="btn btn-primary">Удалить</button>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
           </form>
         </div>
       </div>
@@ -95,10 +88,9 @@
         <a href="#">Наверх</a>
       </p>
       <p class="mb-1">Сервис To Do. &copy;2023 Nike Z. Использовал Bootstrap, Java, Spring boot, thymeleaf.</p>
-      <p class="mb-0">Предложения по работе - <a href="https://ekaterinburg.hh.ru/resume/a9f5ffddff01375f8a0039ed1f544d49736b74">посмотреть моё резюме</a> исходный текст проекта <a href="https://github.com/nikegreen/job4j_todo">перейти на проект</a>.</p>
+      <p class="mb-0">Предложения по работе - <a href="https://ekaterinburg.hh.ru/resume/a9f5ffddff01375f8a0039ed1f544d49736b74" target="_blank">посмотреть моё резюме</a> исходный текст проекта <a href="https://github.com/nikegreen/job4j_todo" target="_blank">перейти на проект</a>.</p>
     </div>
   </footer>
-</form>
 <script src="/bootstrap/js/bootstrap.min.js"></script>
 </body>
 </html>

@@ -18,7 +18,7 @@ public class TaskService {
      * @param task задача.
      * @return задача с новым id.
      */
-    public Task create(Task task) {
+    public Optional<Task> create(Task task) {
         return taskStore.create(task);
     }
 
@@ -26,16 +26,16 @@ public class TaskService {
      * Обновить в базе задач.
      * @param task задача.
      */
-    public void update(Task task) {
-        taskStore.update(task);
+    public boolean update(Task task) {
+        return taskStore.update(task);
     }
 
     /**
      * Удалить задачу по ID.
      * @param taskId ID
      */
-    public void delete(int taskId) {
-        taskStore.delete(taskId);
+    public boolean delete(int taskId) {
+        return taskStore.delete(taskId);
     }
 
     /**
@@ -54,11 +54,19 @@ public class TaskService {
         return taskStore.findById(taskId);
     }
 
-    public List<Task> findAllDone() {
-        return taskStore.findAllDone();
+    /**
+     * Список всех задач отсортированных по id. Где DONE == done
+     * @return список всех задач.
+     */
+    public List<Task> findAllDone(boolean done) {
+        return taskStore.findAllDone(done);
     }
 
-    public List<Task> findAllNew() {
-        return taskStore.findAllNew();
+    /**
+     * Установить в базе задач поле done == true.
+     * @param task задача.
+     */
+    public boolean done(Task task) {
+        return taskStore.done(task);
     }
 }

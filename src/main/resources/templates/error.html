@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="To Do - ежедневник.">
+    <meta name="author" content="Nike Z.">
+    <meta name="generator" content="Nike Z.">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+
+    <title>To Do - Error</title>
+</head>
+<body>
+    <header>
+        <div class="navbar navbar-dark bg-dark shadow-sm">
+            <div class="container">
+                <div class="navbar-brand d-flex align-items-center">
+                    To Do
+                </div>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <div class="card alert alert-danger" role="alert" style="width: 100%">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:" style="width: 4em">
+                                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                            </svg>
+                        </div>
+                        <div class="col" th:if="${(error!=null)&&(error!='None')}" th:text="${error}">
+                        </div>
+                        <div class="col" th:if="${(error==null)||(error=='None')}">
+                            Ошибка!
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form method="GET" th:if="${task!=null}" th:object="${task}">
+                        <input type="hidden" name="id" th:field="*{id}">
+                        <div class="form-group">
+                            <label for="description1">Описание задачи</label>
+                            <label class="form-control" id="description1" th:text="*{description}"></label>
+                            <input type="hidden" name="description" id="description" th:field="*{description}">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="created1">Дата и время создания</label>
+                            <!--<input type="datetime-local" class="form-control" required name="created" id="created" th:field="*{created}">-->
+                            <label class="form-control" id="created1" th:text="*{created}"></label>
+                            <input type="hidden" name="created" id="created" th:field="*{created}">
+                        </div>
+                        <div class="form-group">
+                            <label for="done1">Статус</label>
+                            <label id="done1">
+                                <span th:if="*{done==false}">
+                                новое
+                                </span>
+                                <span th:if="*{done==true}">
+                                выполнено
+                                </span>
+                            </label>
+                            <input type="hidden" name="done" id="done"  th:field="*{done}">
+                        </div>
+                        <button type="submit" th:if="${link!=null}" th:formaction="${link}" class="btn btn-primary">Продолжить</button>
+                        <button type="submit" th:if="${link==null}" th:formaction="@{/index}" class="btn btn-primary">Продолжить</button>
+                    </form>
+                    <form method="GET" th:if="${task==null}">
+                        <button type="submit" th:if="${(link!=null)&&(task==null)}" th:formaction="${link}" class="btn btn-primary">Продолжить</button>
+                        <button type="submit" th:if="${(link==null)&&(task==null)}" th:formaction="@{/index}" class="btn btn-primary">Продолжить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="text-muted py-5">
+        <div class="container">
+            <p class="float-end mb-1">
+                <a href="#">Наверх</a>
+            </p>
+            <p class="mb-1">Сервис To Do. &copy;2023 Nike Z. Использовал Bootstrap, Java, Spring boot, thymeleaf.</p>
+            <p class="mb-0">Предложения по работе - <a href="https://ekaterinburg.hh.ru/resume/a9f5ffddff01375f8a0039ed1f544d49736b74" target="_blank">посмотреть моё резюме</a> исходный текст проекта <a href="https://github.com/nikegreen/job4j_todo" target="_blank">перейти на проект</a>.</p>
+        </div>
+    </footer>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>

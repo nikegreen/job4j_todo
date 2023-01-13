@@ -83,22 +83,19 @@
 
 ## Технологии:
 В проекте использованы:
-- git,
 - java 17,
 - СУБД PostgreSQL 15,
-- Spring boot,
-- JUnit 5,
-- assertj,
-- mockito,
+- Spring boot 2.7.3,
+- JUnit 4.13.2,
+- hamcrest 1.3,
+- mockito 4.0.0,
 - liquibase 3.6.2,
 - h2database 2.1.214,
 - Maven 3.8,
-- thymeleaf,
-- checkstyle,
-- log4j,
-- net.jcip,
+- thymeleaf 2.7.3,
+- checkstyle 3.1.2,
+- net.jcip 1.0,
 - commons-dbcp2 2.7.0,
-- IntelliJ IDEA 2022.3.1 (Community Edition).
 
 ## Список ПО:
 ### - git
@@ -113,7 +110,7 @@
 ### - Maven 3.8
 Установить с сайта: https://maven.apache.org/install.html
 
-### - PostgreSQL 14
+### - PostgreSQL 15
 Установить с сайта: https://www.postgresql.org/download/
 
 ## Запуск проекта
@@ -214,6 +211,9 @@ http://localhost:8080/index
 <img src="https://github.com/nikegreen/job4j_todo/blob/main/files/formEditTask.png" style="width: 100%">
 
 Кнопка "Сохранить" сохранит все изменения.
+
+Если возникнет ошибка появится окно c описанием ошибки:
+<img src="https://github.com/nikegreen/job4j_todo/blob/main/files/error.png" style="width: 100%">
 
 ## FEEDBACK
 Все предложения и замечания направлять job4j_todo.nikegreen@yandex.ru <br>

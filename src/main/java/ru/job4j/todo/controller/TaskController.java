@@ -13,6 +13,7 @@ import ru.job4j.todo.service.TaskService;
 
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  * <p>TaskController class. Spring boot controller</p>
@@ -32,98 +33,162 @@ public class TaskController {
      */
 
     @GetMapping("/index")
-    public String index(Model model,
-                        HttpSession session) {
+    public String index(HttpSession session) {
         String filter = (String) session.getAttribute("filter");
         if ("done".equals(filter)) {
-            model.addAttribute("tasks", taskService.findAllDone());
+            return "redirect:/done";
         } else if ("new".equals(filter)) {
-            model.addAttribute("tasks", taskService.findAllNew());
-        } else {
-            model.addAttribute("tasks", taskService.findAll());
-            filter = "all";
+            return "redirect:/new";
         }
-        session.setAttribute("filter", filter);
-        return "index";
+        return "redirect:/all";
     }
 
-    @PostMapping("/formCreateTask")
-    public String formCreateTask(Model model) {
+    /**
+     * <p>formCreate.</p>
+     * formCreate page web service. Handler button 'Довавить задание' from index page.
+     * @return a {@link java.lang.String} object.
+     */
+    @GetMapping("/formCreate")
+    public String formCreate(Model model) {
         Task task = new Task();
         task.setDescription("description");
         task.setCreated(LocalDateTime.now());
         task.setDone(false);
         model.addAttribute("task", task);
-        return "createTask";
+        return "create";
     }
 
-    @PostMapping("/addTask")
-    public String addTask(Model model, @ModelAttribute Task task) {
-        Task task1 = taskService.create(task);
-        if (task1 == null) {
-            model.addAttribute("task", task);
-            return "addTaskError";
+    /**
+     * <p>add.</p>
+     * Web service. Handler button 'Сохранить' from formCreate page.
+     * @return a {@link java.lang.String} object.
+     */
+    @PostMapping("/add")
+    public String add(Model model, @ModelAttribute Task task) {
+        Optional<Task> task1 = taskService.create(task);
+        if (task1.isPresent()) {
+            return "redirect:/index";
         }
-        return "redirect:/index";
+        model.addAttribute("task", task);
+        model.addAttribute("link", "/index");
+        model.addAttribute("error", "Ошибка! Не удалось создать задачу.");
+        return "error";
     }
 
-    @GetMapping("/filterAll")
-    public String filterAll(Model model,
+    /**
+     * <p>add.</p>
+     * Web service. Set filter to all records.
+     * @return a {@link java.lang.String} object.
+     */
+    @GetMapping("/all")
+    public String all(Model model,
                         HttpSession session) {
         model.addAttribute("tasks", taskService.findAll());
         session.setAttribute("filter", "all");
         return "index";
     }
 
-    @GetMapping("/filterDone")
-    public String filterDone(Model model,
+    /**
+     * <p>add.</p>
+     * Web service. Set filter to done records.
+     * @return a {@link java.lang.String} object.
+     */
+    @GetMapping("/done")
+    public String done(Model model,
                             HttpSession session) {
-        model.addAttribute("tasks", taskService.findAllDone());
+        model.addAttribute("tasks", taskService.findAllDone(true));
         session.setAttribute("filter", "done");
         return "index";
     }
 
-    @GetMapping("/filterNew")
-    public String filterNew(Model model,
+    /**
+     * <p>add.</p>
+     * Web service. Set filter to new records.
+     * @return a {@link java.lang.String} object.
+     */
+    @GetMapping("/new")
+    public String new1(Model model,
                             HttpSession session) {
-        model.addAttribute("tasks", taskService.findAllNew());
+        model.addAttribute("tasks", taskService.findAllDone(false));
         session.setAttribute("filter", "new");
         return "index";
     }
 
-    @GetMapping("/formViewTask/{taskId}")
-    public String formViewTask(Model model,
-                               @PathVariable("taskId") int id) {
-        Task task = taskService.findById(id).orElse(null);
-        if (task != null) {
-            model.addAttribute("task", task);
-            return "viewTask";
+    /**
+     * <p>formView.</p>
+     * Task view page web service.
+     * @return a {@link java.lang.String} object.
+     */
+    @GetMapping("/formView/{Id}")
+    public String formView(Model model,
+                               @PathVariable("Id") int id) {
+        Optional<Task> task = taskService.findById(id);
+        if (task.isPresent()) {
+            model.addAttribute("task", task.get());
+            return "view";
         }
-        return "redirect:/index";
+        model.addAttribute("link", "/index");
+        model.addAttribute("error", "Ошибка! Задача c id="
+                + id + " не существует.");
+        return "error";
     }
 
-    @PostMapping("/deleteTask")
-    public String deleteTask(@ModelAttribute Task task) {
-        taskService.delete(task.getId());
-        return "redirect:/index";
-    }
-
-    @PostMapping("/doneTask")
-    public String doneTask(@ModelAttribute Task task) {
-        task.setDone(true);
-        taskService.update(task);
-        return "redirect:/index";
-    }
-
-    @PostMapping("/formEditTask")
-    public String formEditTask(Model model, @ModelAttribute Task task) {
+    /**
+     * <p>formView.</p>
+     * Web service. Handler button 'Удалить' from form formView.
+     * @return a {@link java.lang.String} object.
+     */
+    @PostMapping("/delete")
+    public String delete(Model model, @ModelAttribute Task task) {
+        if (taskService.delete(task.getId())) {
+            return "redirect:/index";
+        }
         model.addAttribute("task", task);
-        return "editTask";
+        model.addAttribute("link", "/view");
+        model.addAttribute("error", "Ошибка! Задача не удалена.");
+        return "error";
     }
 
-    @PostMapping("/editTask")
-    public String editTask(@ModelAttribute Task task) {
-        taskService.update(task);
-        return "redirect:/index";
+    /**
+     * <p>formView.</p>
+     * Web service. Handler button 'Выполнено' from form formView.
+     * @return a {@link java.lang.String} object.
+     */
+    @PostMapping("/formDone")
+    public String formDone(Model model, @ModelAttribute Task task) {
+        if (taskService.done(task)) {
+            return "redirect:/index";
+        }
+        model.addAttribute("task", task);
+        model.addAttribute("link", "/view");
+        model.addAttribute("error", "Ошибка! Не удалось установить статус задачи.");
+        return "error";
+    }
+
+    /**
+     * <p>formEdit.</p>
+     * Task edit page web service. Handler button 'Отредактировать' from page formView.
+     * @return a {@link java.lang.String} object.
+     */
+    @GetMapping("/formEdit")
+    public String formEdit(Model model, @ModelAttribute Task task) {
+        model.addAttribute("task", task);
+        return "edit";
+    }
+
+    /**
+     * <p>edit.</p>
+     * Handler button 'сохранить' edit page web service
+     * @return a {@link java.lang.String} object.
+     */
+    @PostMapping("/edit")
+    public String edit(Model model, @ModelAttribute Task task) {
+        if (taskService.update(task)) {
+            return "redirect:/index";
+        }
+        model.addAttribute("task", task);
+        model.addAttribute("link", "/edit");
+        model.addAttribute("error", "Ошибка! Не удалось сохранить изменения.");
+        return "error";
     }
 }

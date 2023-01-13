@@ -21,14 +21,14 @@ public class TaskStore {
      * @param task задача.
      * @return задача с новым id.
      */
-    public Task create(Task task) {
-        Task result = null;
+    public Optional<Task> create(Task task) {
+        Optional<Task> result = Optional.empty();
         try (Session session = sf.openSession()) {
             try {
                 session.beginTransaction();
                 session.save(task);
                 session.getTransaction().commit();
-                result = task;
+                result = Optional.of(task);
             } catch (Exception e) {
                 session.getTransaction().rollback();
             }
@@ -40,30 +40,57 @@ public class TaskStore {
      * Обновить в базе задач.
      * @param task задача.
      */
-    public void update(Task task) {
+    public boolean update(Task task) {
+        boolean result = false;
         try (Session session = sf.openSession()) {
             try {
                 session.beginTransaction();
                 session.createQuery(
-                        "UPDATE Task SET description = :fDescription, "
-                                + "created = :fCreated, done = :fDone WHERE id = :fId")
+                                "UPDATE Task SET description = :fDescription, "
+                                        + "created = :fCreated, done = :fDone WHERE id = :fId")
                         .setParameter("fDescription", task.getDescription())
                         .setParameter("fCreated", task.getCreated())
-                        .setParameter("fDone", task.getDone())
+                        .setParameter("fDone", task.isDone())
                         .setParameter("fId", task.getId())
                         .executeUpdate();
                 session.getTransaction().commit();
+                result = true;
             } catch (Exception e) {
                 session.getTransaction().rollback();
             }
         }
+        return result;
+    }
+
+    /**
+     * Установить в базе задач поле done == true.
+     * @param task задача.
+     */
+    public boolean done(Task task) {
+        boolean result = false;
+        try (Session session = sf.openSession()) {
+            try {
+                session.beginTransaction();
+                session.createQuery(
+                                "UPDATE Task SET done = :fDone WHERE id = :fId")
+                        .setParameter("fDone", true)
+                        .setParameter("fId", task.getId())
+                        .executeUpdate();
+                session.getTransaction().commit();
+                result = true;
+            } catch (Exception e) {
+                session.getTransaction().rollback();
+            }
+        }
+        return result;
     }
 
     /**
      * Удалить задачу по id.
      * @param taskId ID
      */
-    public void delete(int taskId) {
+    public boolean delete(int taskId) {
+        boolean result = false;
         try (Session session = sf.openSession()) {
             try {
                 session.beginTransaction();
@@ -72,10 +99,12 @@ public class TaskStore {
                         .setParameter("fId", taskId)
                         .executeUpdate();
                 session.getTransaction().commit();
+                result = true;
             } catch (Exception e) {
                 session.getTransaction().rollback();
             }
         }
+        return result;
     }
 
     /**
@@ -120,31 +149,15 @@ public class TaskStore {
         return result;
     }
 
-    public List<Task> findAllDone() {
+    public List<Task> findAllDone(boolean done) {
         List<Task> result = new ArrayList<>();
         try (Session session = sf.openSession()) {
             try {
                 session.beginTransaction();
                 Query<Task> query = session.createQuery(
-                        "from Task as t where t.done=true order by t.id", Task.class);
-                result.addAll(query.list());
-                session.getTransaction().commit();
-            } catch (Exception e) {
-                session.getTransaction().rollback();
-            }
-            session.close();
-        }
-        return result;
-    }
-
-    public List<Task> findAllNew() {
-        List<Task> result = new ArrayList<>();
-        try (Session session = sf.openSession()) {
-            try {
-                session.beginTransaction();
-                Query<Task> query = session.createQuery(
-                        "from Task as t where t.done=false order by t.id", Task.class);
-                result.addAll(query.list());
+                        "from Task as t where t.done= :fDone order by t.id", Task.class)
+                        .setParameter("fDone", done);
+                result = query.list();
                 session.getTransaction().commit();
             } catch (Exception e) {
                 session.getTransaction().rollback();
