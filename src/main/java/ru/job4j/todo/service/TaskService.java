@@ -58,15 +58,15 @@ public class TaskService {
      * Список всех задач отсортированных по id. Где DONE == done
      * @return список всех задач.
      */
-    public List<Task> findAllDone(boolean done) {
-        return taskStore.findAllDone(done);
+    public List<Task> findAllByDone(boolean done) {
+        return taskStore.findAllByDone(done);
     }
 
     /**
      * Установить в базе задач поле done == true.
      * @param task задача.
      */
-    public boolean done(Task task) {
-        return taskStore.done(task);
+    public boolean updateDone(Task task) {
+        return taskStore.updateDone(task);
     }
 }

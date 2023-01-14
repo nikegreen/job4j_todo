@@ -59,15 +59,16 @@ public class TaskStore {
      * Установить в базе задач поле done == true.
      * @param task задача.
      */
-    public boolean done(Task task) {
+    public boolean updateDone(Task task) {
         boolean result = false;
         try (Session session = sf.openSession()) {
             try {
-                task.setDone(true);
                 session.beginTransaction();
-                session.merge(task);
+                int i = session.createQuery("UPDATE Task SET done = :fDone WHERE id = :fId")
+                        .setParameter("fDone", true)
+                        .setParameter("fId", task.getId()).executeUpdate();
                 session.getTransaction().commit();
-                result = true;
+                result = i == 1;
             } catch (Exception e) {
                 session.getTransaction().rollback();
             }
@@ -143,7 +144,7 @@ public class TaskStore {
      * Получить список задач где done == done
      * @return List<Task>.
      */
-    public List<Task> findAllDone(boolean done) {
+    public List<Task> findAllByDone(boolean done) {
         List<Task> result = new ArrayList<>();
         try (Session session = sf.openSession()) {
             try {

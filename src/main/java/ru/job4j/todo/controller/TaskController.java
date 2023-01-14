@@ -96,7 +96,7 @@ public class TaskController {
     @GetMapping("/done")
     public String done(Model model,
                             HttpSession session) {
-        model.addAttribute("tasks", taskService.findAllDone(true));
+        model.addAttribute("tasks", taskService.findAllByDone(true));
         session.setAttribute("filter", "done");
         return "index";
     }
@@ -109,7 +109,7 @@ public class TaskController {
     @GetMapping("/new")
     public String new1(Model model,
                             HttpSession session) {
-        model.addAttribute("tasks", taskService.findAllDone(false));
+        model.addAttribute("tasks", taskService.findAllByDone(false));
         session.setAttribute("filter", "new");
         return "index";
     }
@@ -156,7 +156,7 @@ public class TaskController {
      */
     @PostMapping("/formDone")
     public String formDone(Model model, @ModelAttribute Task task) {
-        if (taskService.done(task)) {
+        if (taskService.updateDone(task)) {
             return "redirect:/index";
         }
         model.addAttribute("task", task);
