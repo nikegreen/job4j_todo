@@ -10,14 +10,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.service.TaskService;
-
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
  * <p>TaskController class. Spring boot controller</p>
- * return allways text "Greetings from Spring Boot!"
  * @author nikez
  * @version $Id: $Id
  */
