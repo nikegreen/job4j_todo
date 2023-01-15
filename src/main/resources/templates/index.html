@@ -22,19 +22,19 @@
           </div>
           <div class="navbar-brand d-flex align-items-center">
             <a class="navbar-brand d-flex align-items-center"
-               th:if="${(session==null)||(session.user==null)||(session.user.name == null)||(session.user.name == 'Гость')}" th:href="@{/login}">
+               th:if="${(session==null)||(session.user==null)||(session.user.name == null)||(session.user.name == 'Гость')}" th:href="@{/pages/login}">
               <span>Гость | вход</span>
             </a>
             <a class="navbar-brand d-flex align-items-center"
-               th:if="${(session!=null)&&(session.user!=null)&&(session.user.name != null)&&(session.user.name != 'Гость')}" th:href="@{/logout}">
+               th:if="${(session!=null)&&(session.user!=null)&&(session.user.name != null)&&(session.user.name != 'Гость')}" th:href="@{/pages/logout}">
               <span th:text="${session.user.name}+' | выйти'"></span>
             </a>
           </div>
           <a class="navbar-brand d-flex align-items-center"
-             th:if="${(session==null)||(session.user==null)||(session.user.name == null)||(session.user.name == 'Гость')}" th:href="@{/registration}">
+             th:if="${(session==null)||(session.user==null)||(session.user.name == null)||(session.user.name == 'Гость')}" th:href="@{/pages/registration}">
             <span>регистрация</span>
           </a>
-          <a  class="navbar-brand d-flex align-items-center" th:href="@{/all}" th:if="${(session.filter=='done')||(session.filter=='new')}">
+          <a  class="navbar-brand d-flex align-items-center" th:href="@{/pages/all}" th:if="${(session.filter=='done')||(session.filter=='new')}">
             <div>
               Все
             </div>
@@ -42,7 +42,7 @@
           <div class="navbar-brand d-flex align-items-center" th:if="${(session.filter!='done')&&(session.filter!='new')}">
             Все
           </div>
-          <a class="navbar-brand d-flex align-items-center" th:href="@{/done}" th:if="${(session.filter!=null)&&(session.filter!='done')}">
+          <a class="navbar-brand d-flex align-items-center" th:href="@{/pages/done}" th:if="${(session.filter!=null)&&(session.filter!='done')}">
             <div>
               Выполненные
             </div>
@@ -50,7 +50,7 @@
           <div class="navbar-brand d-flex align-items-center" th:if="${(session.filter!=null)&&(session.filter=='done')}">
             Выполненные
           </div>
-          <a class="navbar-brand d-flex align-items-center" th:href="@{/new}"  th:if="${(session.filter!=null)&&(session.filter!='new')}">
+          <a class="navbar-brand d-flex align-items-center" th:href="@{/pages/new}"  th:if="${(session.filter!=null)&&(session.filter!='new')}">
             <div>
               Новые
             </div>

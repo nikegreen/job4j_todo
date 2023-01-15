@@ -28,7 +28,7 @@ public class UserController {
      * Страница для регистрации пользователя  web service
      * @return a {@link java.lang.String} object.
      */
-    @GetMapping("/registration")
+    @GetMapping("/pages/registration")
     public String registration() {
         return "registration";
     }
@@ -38,9 +38,9 @@ public class UserController {
      * Страница для регистрации пользователя  web service
      * @return a {@link java.lang.String} object.
      */
-    @PostMapping("/registration")
+    @PostMapping("/pages/registration")
     public String registration1(Model model, HttpSession session, @ModelAttribute User user) {
-        String link = "/login";
+        String link = "/pages/login";
         String error = "Ошибка! Не переданы данные пользователя на сервер.";
         if (user != null) {
             Optional<User> result = userService.create(user);
@@ -48,11 +48,11 @@ public class UserController {
                 user.setId(result.get().getId());
                 user.setPassword("");
                 session.setAttribute("user", user);
-                return "redirect:/login";
+                return "redirect:/pages/login";
             }
             error = "Ошибка! Такой пользователь уже есть или попробуйте повторить позже.";
+            user.setPassword("");
         }
-        user.setPassword("");
         model.addAttribute("link", link);
         model.addAttribute("error", error);
         model.addAttribute("user", user);
@@ -64,7 +64,7 @@ public class UserController {
      * Страница входа пользоватнля web service
      * @return a {@link java.lang.String} object.
      */
-    @GetMapping("/login")
+    @GetMapping("/pages/login")
     public String login() {
         return "login";
     }
@@ -74,9 +74,9 @@ public class UserController {
      * Страница для обработки результатов входа пользоватнля web service
      * @return a {@link java.lang.String} object.
      */
-    @PostMapping("/login")
+    @PostMapping("/pages/login")
     public String login1(Model model, HttpSession session, @ModelAttribute User user) {
-        String link = "/login";
+        String link = "/pages/login";
         String error = "Ошибка! Не переданы данные пользователя на сервер.";
         if (user != null) {
             Optional<User> result = userService.findByLoginAndPassword(
@@ -89,8 +89,8 @@ public class UserController {
                 return "redirect:/index";
             }
             error = "Ошибка! Нет такого пользователя с таким паролем.";
+            user.setPassword("");
         }
-        user.setPassword("");
         model.addAttribute("link", link);
         model.addAttribute("error", error);
         model.addAttribute("user", user);
@@ -102,9 +102,9 @@ public class UserController {
      * Страница для выхода пользоватнля с web service
      * @return a {@link java.lang.String} object.
      */
-    @GetMapping("/logout")
+    @GetMapping("/pages/logout")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "redirect:/login";
+        return "redirect:/pages/login";
     }
 }

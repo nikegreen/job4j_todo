@@ -34,11 +34,11 @@ public class TaskController {
     public String index(HttpSession session) {
         String filter = (String) session.getAttribute("filter");
         if ("done".equals(filter)) {
-            return "redirect:/done";
+            return "redirect:/pages/done";
         } else if ("new".equals(filter)) {
-            return "redirect:/new";
+            return "redirect:/pages/new";
         }
-        return "redirect:/all";
+        return "redirect:/pages/all";
     }
 
     /**
@@ -78,7 +78,7 @@ public class TaskController {
      * Web service. Set filter to all records.
      * @return a {@link java.lang.String} object.
      */
-    @GetMapping("/all")
+    @GetMapping("/pages/all")
     public String all(Model model,
                         HttpSession session) {
         model.addAttribute("tasks", taskService.findAll());
@@ -91,7 +91,7 @@ public class TaskController {
      * Web service. Set filter to done records.
      * @return a {@link java.lang.String} object.
      */
-    @GetMapping("/done")
+    @GetMapping("/pages/done")
     public String done(Model model,
                             HttpSession session) {
         model.addAttribute("tasks", taskService.findAllByDone(true));
@@ -104,7 +104,7 @@ public class TaskController {
      * Web service. Set filter to new records.
      * @return a {@link java.lang.String} object.
      */
-    @GetMapping("/new")
+    @GetMapping("/pages/new")
     public String new1(Model model,
                             HttpSession session) {
         model.addAttribute("tasks", taskService.findAllByDone(false));
