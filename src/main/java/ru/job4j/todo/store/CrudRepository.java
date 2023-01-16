@@ -3,14 +3,18 @@ package ru.job4j.todo.store;
 import lombok.AllArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+@Repository
 @AllArgsConstructor
-public class CrudStore {
+public class CrudRepository {
     private final SessionFactory sf;
 
     public void run(Consumer<Session> command) {
@@ -35,12 +39,13 @@ public class CrudStore {
 
     public <T> Optional<T> optional(String query, Class<T> cl, Map<String, Object> args) {
         Function<Session, Optional<T>> command = session -> {
-            var sq = session
+            Query<T> sq = session
                     .createQuery(query, cl);
             for (Map.Entry<String, Object> arg : args.entrySet()) {
                 sq.setParameter(arg.getKey(), arg.getValue());
             }
             return Optional.ofNullable(sq.getSingleResult());
+            //return sq.uniqueResultOptional();
         };
         return tx(command);
     }
