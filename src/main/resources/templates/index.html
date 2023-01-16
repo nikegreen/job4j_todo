@@ -76,6 +76,8 @@
                 <th scope="col">Описание задания</th>
                 <th scope="col">Дата создания</th>
                 <th scope="col">Результат</th>
+                <th scope="col">Имя</th>
+                <th scope="col">Логин</th>
               </tr>
             </thead>
             <tbody>
@@ -96,6 +98,14 @@
                     <a th:href="'/formView/'+${task.id}">
                       <span th:if="${task.done}">выполнено</span>
                       <span th:if="${!task.done}">новое</span>
+                    </a>
+                  </td>
+                  <td>
+                    <a th:href="'/formView/'+${task.id}" th:text="${task.user.name}">
+                    </a>
+                  </td>
+                  <td>
+                    <a th:href="'/formView/'+${task.id}" th:text="${task.user.login}">
                     </a>
                   </td>
                 </tr>

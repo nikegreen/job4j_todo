@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import ru.job4j.todo.model.Task;
+import ru.job4j.todo.model.User;
 import ru.job4j.todo.service.TaskService;
+import ru.job4j.todo.service.UserService;
+
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -24,6 +27,8 @@ import java.util.Optional;
 @Controller
 public class TaskController {
     private final TaskService taskService;
+    private final UserService userService;
+
     /**
      * <p>index.</p>
      * Main page web service
@@ -62,7 +67,11 @@ public class TaskController {
      * @return a {@link java.lang.String} object.
      */
     @PostMapping("/add")
-    public String add(Model model, @ModelAttribute Task task) {
+    public String add(Model model, HttpSession session, @ModelAttribute Task task) {
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            task.setUser(userService.findById(user.getId()).orElse(null));
+        }
         Optional<Task> task1 = taskService.create(task);
         if (task1.isPresent()) {
             return "redirect:/index";
@@ -153,7 +162,11 @@ public class TaskController {
      * @return a {@link java.lang.String} object.
      */
     @PostMapping("/formDone")
-    public String formDone(Model model, @ModelAttribute Task task) {
+    public String formDone(Model model, HttpSession session, @ModelAttribute Task task) {
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            task.setUser(userService.findById(user.getId()).orElse(null));
+        }
         if (taskService.updateDone(task)) {
             return "redirect:/index";
         }
@@ -180,7 +193,11 @@ public class TaskController {
      * @return a {@link java.lang.String} object.
      */
     @PostMapping("/edit")
-    public String edit(Model model, @ModelAttribute Task task) {
+    public String edit(Model model, HttpSession session, @ModelAttribute Task task) {
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            task.setUser(userService.findById(user.getId()).orElse(null));
+        }
         if (taskService.update(task)) {
             return "redirect:/index";
         }
