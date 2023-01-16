@@ -45,7 +45,6 @@ public class CrudRepository {
                 sq.setParameter(arg.getKey(), arg.getValue());
             }
             return Optional.ofNullable(sq.getSingleResult());
-            //return sq.uniqueResultOptional();
         };
         return tx(command);
     }
