@@ -78,6 +78,7 @@
                 <th scope="col">Результат</th>
                 <th scope="col">Имя</th>
                 <th scope="col">Логин</th>
+                <th scope="col">Приоритет</th>
               </tr>
             </thead>
             <tbody>
@@ -106,6 +107,10 @@
                   </td>
                   <td>
                     <a th:href="'/formView/'+${task.id}" th:text="${task.user.login}">
+                    </a>
+                  </td>
+                  <td>
+                    <a th:href="'/formView/'+${task.id}" th:text="${task.priority.name}">
                     </a>
                   </td>
                 </tr>

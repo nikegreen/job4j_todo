@@ -4,17 +4,17 @@ import lombok.RequiredArgsConstructor;
 import net.jcip.annotations.ThreadSafe;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+import ru.job4j.todo.model.Priority;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.model.User;
+import ru.job4j.todo.service.PriorityService;
 import ru.job4j.todo.service.TaskService;
 import ru.job4j.todo.service.UserService;
 
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -28,6 +28,7 @@ import java.util.Optional;
 public class TaskController {
     private final TaskService taskService;
     private final UserService userService;
+    private final PriorityService priorityService;
 
     /**
      * <p>index.</p>
@@ -52,11 +53,18 @@ public class TaskController {
      * @return a {@link java.lang.String} object.
      */
     @GetMapping("/formCreate")
-    public String formCreate(Model model) {
+    public String formCreate(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        List<Priority> priorities = priorityService.findAll();
+        model.addAttribute("priorities", priorities);
+        Priority priority = priorities.get(0);
+        model.addAttribute("priority_id", priority.getId());
         Task task = new Task();
         task.setDescription("description");
         task.setCreated(LocalDateTime.now());
         task.setDone(false);
+        task.setUser(user);
+        task.setPriority(priority);
         model.addAttribute("task", task);
         return "create";
     }
@@ -67,11 +75,18 @@ public class TaskController {
      * @return a {@link java.lang.String} object.
      */
     @PostMapping("/add")
-    public String add(Model model, HttpSession session, @ModelAttribute Task task) {
+    public String add(
+            Model model,
+            HttpSession session,
+            @ModelAttribute Task task,
+            @RequestParam("priority_id") int priorityId
+    ) {
         User user = (User) session.getAttribute("user");
         if (user != null) {
             task.setUser(userService.findById(user.getId()).orElse(null));
         }
+        Optional<Priority> priority = priorityService.findById(priorityId);
+        priority.ifPresent(x -> task.setPriority(priority.get()));
         Optional<Task> task1 = taskService.create(task);
         if (task1.isPresent()) {
             return "redirect:/index";
@@ -184,6 +199,10 @@ public class TaskController {
     @GetMapping("/formEdit")
     public String formEdit(Model model, @ModelAttribute Task task) {
         model.addAttribute("task", task);
+        List<Priority> priorities = priorityService.findAll();
+        model.addAttribute("priorities", priorities);
+        int i = task.getPriority().getId();
+        model.addAttribute("priority_id", i);
         return "edit";
     }
 
@@ -193,11 +212,18 @@ public class TaskController {
      * @return a {@link java.lang.String} object.
      */
     @PostMapping("/edit")
-    public String edit(Model model, HttpSession session, @ModelAttribute Task task) {
+    public String edit(
+            Model model,
+            HttpSession session,
+            @ModelAttribute Task task,
+            @RequestParam("priority_id") int priorityId
+    ) {
         User user = (User) session.getAttribute("user");
         if (user != null) {
             task.setUser(userService.findById(user.getId()).orElse(null));
         }
+        Optional<Priority> priority = priorityService.findById(priorityId);
+        priority.ifPresent(x -> task.setPriority(priority.get()));
         if (taskService.update(task)) {
             return "redirect:/index";
         }

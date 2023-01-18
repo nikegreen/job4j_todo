@@ -82,6 +82,20 @@
               </label>
               <input type="hidden" name="done" id="done"  th:field="*{done}">
             </div>
+            <div class="form-group">
+              <label for="priority1">Приоритет</label>
+              <label id="priority1">
+                <span th:if="*{priority!=null}" th:text="*{priority.name}">
+                новое
+                </span>
+                <span th:if="*{priority==null}">
+                --//--
+                </span>
+              </label>
+              <input type="hidden" name="priority.id" id="priority.id"  th:field="*{priority.id}">
+              <input type="hidden" name="priority.name" id="priority.name"  th:field="*{priority.name}">
+              <input type="hidden" name="priority.position" id="priority.position"  th:field="*{priority.position}">
+            </div>
             <button type="submit" formaction="/formDone" class="btn btn-primary">Выполнено</button>
             <button type="submit" formaction="/formEdit" formmethod="get" class="btn btn-primary">Отредактировать</button>
             <button type="submit" formaction="/delete" class="btn btn-primary">Удалить</button>

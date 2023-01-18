@@ -40,7 +40,7 @@
                 </div>
                 <div class="card-body">
                     <form method="GET" th:if="${task!=null}" th:object="${task}">
-                        <input type="hidden" name="id" th:field="*{id}">
+                        <input type="hidden" name="id" id="id" th:field="*{id}">
                         <div class="form-group">
                             <label for="description1">Описание задачи</label>
                             <label class="form-control" id="description1" th:text="*{description}"></label>
@@ -64,6 +64,20 @@
                                 </span>
                             </label>
                             <input type="hidden" name="done" id="done"  th:field="*{done}">
+                        </div>
+                        <div class="form-group">
+                            <label for="priority1">Приоритет</label>
+                            <label id="priority1">
+                                <span th:if="*{priority!=null}" th:text="*{'id='+priority.id+' name='+priority.name+' position='+priority.position}">
+                                    <input type="hidden" name="priority.id" id="priority.id"  th:field="*{priority.id}">
+                                    <input type="hidden" name="priority.name" id="priority.name"  th:field="*{priority.name}">
+                                    <input type="hidden" name="priority.position" id="priority.position"  th:field="*{priority.position}">
+                                </span>
+                                <span th:if="*{priority==null}">
+                                --//--
+                                    <input type="hidden" name="priority" id="priority"  th:field="*{priority}">
+                                </span>
+                            </label>
                         </div>
                         <button type="submit" th:if="${link!=null}" th:formaction="${link}" class="btn btn-primary">Продолжить</button>
                         <button type="submit" th:if="${link==null}" th:formaction="@{/index}" class="btn btn-primary">Продолжить</button>

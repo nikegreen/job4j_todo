@@ -46,12 +46,13 @@ public class TaskStore {
      * @return boolean
      */
     public boolean updateDone(Task task) {
-        Function<Session, Boolean> command = session -> {
-            task.setDone(true);
-            session.merge(task);
-            return true;
+        Function<Session, Integer> command = session -> {
+            var sq = session.createQuery(
+                    "UPDATE Task t SET t.done = true WHERE t.id = :fId");
+            sq.setParameter("fId", task.getId());
+            return sq.executeUpdate();
         };
-        return crudRepository.tx(command);
+        return crudRepository.tx(command) == 1;
     }
 
     /**
@@ -61,7 +62,7 @@ public class TaskStore {
      */
     public boolean delete(int id) {
         Function<Session, Integer> command = session -> {
-            var sq = session.createQuery("delete from Task where id = :fId");
+            var sq = session.createQuery("DELETE FROM Task WHERE id = :fId");
             sq.setParameter("fId", id);
             return sq.executeUpdate();
         };
@@ -73,7 +74,10 @@ public class TaskStore {
      * @return список всех задач.
      */
     public List<Task> findAll() {
-        return crudRepository.query("from Task order by id asc", Task.class);
+        return crudRepository.query(
+                "FROM Task t JOIN FETCH t.priority ORDER BY t.id ASC",
+                Task.class
+        );
     }
 
     /**
@@ -82,7 +86,7 @@ public class TaskStore {
      */
     public Optional<Task> findById(int id) {
         return crudRepository.optional(
-                "from Task where id = :fId",
+                "FROM Task t JOIN FETCH t.priority WHERE t.id = :fId",
                 Task.class,
                 Map.of("fId", id)
         );
@@ -94,7 +98,7 @@ public class TaskStore {
      */
     public List<Task> findAllByDone(boolean done) {
         return crudRepository.query(
-                "from Task as t where t.done= :fDone order by t.id asc ",
+                "FROM Task t JOIN FETCH t.priority WHERE t.done= :fDone ORDER BY t.id ASC",
                 Task.class,
                 Map.of("fDone", done));
     }

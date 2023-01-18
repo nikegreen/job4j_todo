@@ -75,6 +75,13 @@
                                     <option value="true">выполнено</option>
                                 </select>
                             </div>
+                            <div class="form-group">
+                                <label for="priority_id">Приоритет</label>
+                                <select name="priority_id" id="priority_id" th:if="${priorities!=null}">
+                                    <option th:each="priority1: ${priorities}" th:value="${priority1.id}"  th:text="${priority1.name}">
+                                    </option>
+                                </select>
+                            </div>
                             <button type="submit" class="btn btn-primary">Сохранить</button>
                         </form>
                     </div>

@@ -9,4 +9,5 @@
     <include file="scripts/002_dml_comment_table_task.sql" relativeToChangelogFile="true"/>
     <include file="scripts/003_ddl_create_table_todo_user.sql" relativeToChangelogFile="true"/>
     <include file="scripts/004_ddl_add_column_user_to_table_items.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/005_ddl_dml_create_table_priorities_add_column_priority_id_to_tasks_insert_priorities.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
