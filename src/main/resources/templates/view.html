@@ -59,19 +59,19 @@
           <form method="POST" th:object="${task}">
             <input type="hidden" name="id" th:field="*{id}">
             <div class="form-group">
-              <label for="description1">Описание задачи</label>
+              <label for="description1">Описание задачи:</label>
               <label class="form-control" id="description1" th:text="*{description}"></label>
               <input type="hidden" name="description" id="description" th:field="*{description}">
             </div>
 
             <div class="form-group">
-              <label for="created1">Дата и время создания</label>
+              <label for="created1">Дата и время создания:</label>
               <!--<input type="datetime-local" class="form-control" required name="created" id="created" th:field="*{created}">-->
               <label class="form-control" id="created1" th:text="*{created}"></label>
               <input type="hidden" name="created" id="created" th:field="*{created}">
             </div>
             <div class="form-group">
-              <label for="done1">Статус</label>
+              <label for="done1">Статус:</label>
               <label id="done1">
                 <span th:if="*{done==false}">
                 новое
@@ -83,7 +83,7 @@
               <input type="hidden" name="done" id="done"  th:field="*{done}">
             </div>
             <div class="form-group">
-              <label for="priority1">Приоритет</label>
+              <label for="priority1">Приоритет:</label>
               <label id="priority1">
                 <span th:if="*{priority!=null}" th:text="*{priority.name}">
                 новое
@@ -95,6 +95,28 @@
               <input type="hidden" name="priority.id" id="priority.id"  th:field="*{priority.id}">
               <input type="hidden" name="priority.name" id="priority.name"  th:field="*{priority.name}">
               <input type="hidden" name="priority.position" id="priority.position"  th:field="*{priority.position}">
+            </div>
+            <div class="form-group">
+                <label th:for="checks">Категории:</label>
+                <th:block th:each="category, stat : *{categories}">
+                  <input type="hidden" th:id="'checks'+${category.id}" th:name="checks" th:value="${category.id}" checked/>
+                  <label th:text="${category.name}"></label>
+                  <label th:if="${#arrays.length(task.categories)>stat.count}" th:text="${', '}"></label>
+                </th:block>
+                <label th:text="."></label>
+            </div>
+            <div class="form-group">
+              <label th:for="user.name1">Имя пользователя:</label>
+              <label id="user.name1" th:text="*{user.name}"></label>
+            </div>
+            <div class="form-group">
+              <label th:for="user.login1">login пользователя:</label>
+              <label id="user.login1" th:text="*{user.login}"></label>
+              <th:block th:if="*{user!=null}">
+                <input type="hidden" name="user.id" id="user.id"  th:field="*{user.id}">
+                <input type="hidden" name="user.name" id="user.name"  th:field="*{user.name}">
+                <input type="hidden" name="user.login" id="user.login"  th:field="*{user.login}">
+              </th:block>
             </div>
             <button type="submit" formaction="/formDone" class="btn btn-primary">Выполнено</button>
             <button type="submit" formaction="/formEdit" formmethod="get" class="btn btn-primary">Отредактировать</button>

@@ -5,15 +5,18 @@ import net.jcip.annotations.ThreadSafe;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import ru.job4j.todo.model.Category;
 import ru.job4j.todo.model.Priority;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.model.User;
+import ru.job4j.todo.service.CategoryService;
 import ru.job4j.todo.service.PriorityService;
 import ru.job4j.todo.service.TaskService;
 import ru.job4j.todo.service.UserService;
 
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +32,7 @@ public class TaskController {
     private final TaskService taskService;
     private final UserService userService;
     private final PriorityService priorityService;
+    private final CategoryService categoryService;
 
     /**
      * <p>index.</p>
@@ -59,13 +63,18 @@ public class TaskController {
         model.addAttribute("priorities", priorities);
         Priority priority = priorities.get(0);
         model.addAttribute("priority_id", priority.getId());
+
         Task task = new Task();
         task.setDescription("description");
         task.setCreated(LocalDateTime.now());
         task.setDone(false);
         task.setUser(user);
         task.setPriority(priority);
+        task.setCategories(new ArrayList<>());
         model.addAttribute("task", task);
+
+        List<Category> categories = categoryService.findAll();
+        model.addAttribute("categories", categories);
         return "create";
     }
 
@@ -79,7 +88,8 @@ public class TaskController {
             Model model,
             HttpSession session,
             @ModelAttribute Task task,
-            @RequestParam("priority_id") int priorityId
+            @RequestParam("priority_id") int priorityId,
+            @RequestParam(value = "checks", required = false) int[] checks
     ) {
         User user = (User) session.getAttribute("user");
         if (user != null) {
@@ -87,6 +97,7 @@ public class TaskController {
         }
         Optional<Priority> priority = priorityService.findById(priorityId);
         priority.ifPresent(x -> task.setPriority(priority.get()));
+        setCategoriesFromChecks(task, checks);
         Optional<Task> task1 = taskService.create(task);
         if (task1.isPresent()) {
             return "redirect:/index";
@@ -95,6 +106,17 @@ public class TaskController {
         model.addAttribute("link", "/index");
         model.addAttribute("error", "Ошибка! Не удалось создать задачу.");
         return "error";
+    }
+
+    private void setCategoriesFromChecks(Task task, int[] checks) {
+        if (checks != null) {
+            List<Category> categories = new ArrayList<>();
+            for (int check: checks) {
+                Optional<Category> category = categoryService.findById(check);
+                category.ifPresent(categories::add);
+            }
+            task.setCategories(categories);
+        }
     }
 
     /**
@@ -197,12 +219,30 @@ public class TaskController {
      * @return a {@link java.lang.String} object.
      */
     @GetMapping("/formEdit")
-    public String formEdit(Model model, @ModelAttribute Task task) {
+    public String formEdit(Model model,
+                           @ModelAttribute Task task,
+                           @RequestParam(value = "checks", required = false) int[] checks
+    ) {
         model.addAttribute("task", task);
         List<Priority> priorities = priorityService.findAll();
         model.addAttribute("priorities", priorities);
         int i = task.getPriority().getId();
         model.addAttribute("priority_id", i);
+        List<Category> categories = categoryService.findAll();
+        model.addAttribute("categories", categories);
+        List<Boolean> categoriesChecked = new ArrayList<>();
+        int index = 0;
+        for (Category category: categories) {
+            boolean res = false;
+            if ((checks != null) && (checks.length > index)) {
+                res = category.getId() == checks[index];
+                if (res) {
+                    index++;
+                }
+            }
+            categoriesChecked.add(res);
+        }
+        model.addAttribute("categories_checked", categoriesChecked);
         return "edit";
     }
 
@@ -216,7 +256,8 @@ public class TaskController {
             Model model,
             HttpSession session,
             @ModelAttribute Task task,
-            @RequestParam("priority_id") int priorityId
+            @RequestParam("priority_id") int priorityId,
+            @RequestParam(value = "checks", required = false) int[] checks
     ) {
         User user = (User) session.getAttribute("user");
         if (user != null) {
@@ -224,6 +265,7 @@ public class TaskController {
         }
         Optional<Priority> priority = priorityService.findById(priorityId);
         priority.ifPresent(x -> task.setPriority(priority.get()));
+        setCategoriesFromChecks(task, checks);
         if (taskService.update(task)) {
             return "redirect:/index";
         }

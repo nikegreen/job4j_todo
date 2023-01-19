@@ -86,7 +86,8 @@ public class TaskStore {
      */
     public Optional<Task> findById(int id) {
         return crudRepository.optional(
-                "FROM Task t JOIN FETCH t.priority WHERE t.id = :fId",
+                "FROM Task t left JOIN FETCH t.priority "
+                        + "p left JOIN FETCH t.categories WHERE t.id = :fId",
                 Task.class,
                 Map.of("fId", id)
         );

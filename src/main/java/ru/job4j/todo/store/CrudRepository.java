@@ -68,18 +68,19 @@ public class CrudRepository {
     }
 
     public <T> T tx(Function<Session, T> command) {
-        var session = sf.openSession();
-        try (session) {
-            var tx = session.beginTransaction();
-            T rsl = command.apply(session);
-            tx.commit();
-            return rsl;
-        } catch (Exception e) {
-            var tx = session.getTransaction();
-            if (tx.isActive()) {
-                tx.rollback();
+        try (var session = sf.openSession()) {
+            try {
+                var tx = session.beginTransaction();
+                T rsl = command.apply(session);
+                tx.commit();
+                return rsl;
+            } catch (Exception e) {
+                var tx = session.getTransaction();
+                if (tx.isActive()) {
+                    tx.rollback();
+                }
+                throw e;
             }
-            throw e;
         }
     }
 }
