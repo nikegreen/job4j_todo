@@ -92,9 +92,7 @@ public class TaskController {
             @RequestParam(value = "checks", required = false) int[] checks
     ) {
         User user = (User) session.getAttribute("user");
-        if (user != null) {
-            task.setUser(userService.findById(user.getId()).orElse(null));
-        }
+        task.setUser(userService.findById(user.getId()).orElse(null));
         Optional<Priority> priority = priorityService.findById(priorityId);
         priority.ifPresent(x -> task.setPriority(priority.get()));
         setCategoriesFromChecks(task, checks);
@@ -138,8 +136,7 @@ public class TaskController {
      * @return a {@link java.lang.String} object.
      */
     @GetMapping("/pages/done")
-    public String done(Model model,
-                            HttpSession session) {
+    public String done(Model model, HttpSession session) {
         model.addAttribute("tasks", taskService.findAllByDone(true));
         session.setAttribute("filter", "done");
         return "index";
@@ -151,8 +148,7 @@ public class TaskController {
      * @return a {@link java.lang.String} object.
      */
     @GetMapping("/pages/new")
-    public String new1(Model model,
-                            HttpSession session) {
+    public String new1(Model model, HttpSession session) {
         model.addAttribute("tasks", taskService.findAllByDone(false));
         session.setAttribute("filter", "new");
         return "index";
@@ -164,8 +160,7 @@ public class TaskController {
      * @return a {@link java.lang.String} object.
      */
     @GetMapping("/formView/{Id}")
-    public String formView(Model model,
-                               @PathVariable("Id") int id) {
+    public String formView(Model model, @PathVariable("Id") int id) {
         Optional<Task> task = taskService.findById(id);
         if (task.isPresent()) {
             model.addAttribute("task", task.get());
@@ -201,9 +196,7 @@ public class TaskController {
     @PostMapping("/formDone")
     public String formDone(Model model, HttpSession session, @ModelAttribute Task task) {
         User user = (User) session.getAttribute("user");
-        if (user != null) {
-            task.setUser(userService.findById(user.getId()).orElse(null));
-        }
+        task.setUser(userService.findById(user.getId()).orElse(null));
         if (taskService.updateDone(task)) {
             return "redirect:/index";
         }
@@ -260,9 +253,7 @@ public class TaskController {
             @RequestParam(value = "checks", required = false) int[] checks
     ) {
         User user = (User) session.getAttribute("user");
-        if (user != null) {
-            task.setUser(userService.findById(user.getId()).orElse(null));
-        }
+        task.setUser(userService.findById(user.getId()).orElse(null));
         Optional<Priority> priority = priorityService.findById(priorityId);
         priority.ifPresent(x -> task.setPriority(priority.get()));
         setCategoriesFromChecks(task, checks);
