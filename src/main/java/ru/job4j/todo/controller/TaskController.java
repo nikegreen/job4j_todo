@@ -13,7 +13,6 @@ import ru.job4j.todo.service.CategoryService;
 import ru.job4j.todo.service.PriorityService;
 import ru.job4j.todo.service.TaskService;
 import ru.job4j.todo.service.UserService;
-
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -60,10 +59,12 @@ public class TaskController {
     public String formCreate(Model model, HttpSession session) {
         User user = (User) session.getAttribute("user");
         List<Priority> priorities = priorityService.findAll();
+        if (priorities == null || priorities.size() == 0) {
+            return goToError(model, null, "/index", "Таблица приоритетов пуста!");
+        }
         model.addAttribute("priorities", priorities);
         Priority priority = priorities.get(0);
         model.addAttribute("priority_id", priority.getId());
-
         Task task = new Task();
         task.setDescription("description");
         task.setCreated(LocalDateTime.now());
@@ -72,8 +73,10 @@ public class TaskController {
         task.setPriority(priority);
         task.setCategories(new ArrayList<>());
         model.addAttribute("task", task);
-
         List<Category> categories = categoryService.findAll();
+        if (categories == null || categories.size() == 0) {
+            return goToError(model, null, "/index", "Таблица с категориями пуста!");
+        }
         model.addAttribute("categories", categories);
         return "create";
     }
@@ -91,30 +94,48 @@ public class TaskController {
             @RequestParam("priority_id") int priorityId,
             @RequestParam(value = "checks", required = false) int[] checks
     ) {
-        User user = (User) session.getAttribute("user");
-        task.setUser(userService.findById(user.getId()).orElse(null));
+        Optional<User> user = userService.findById(((User) session.getAttribute("user")).getId());
+        if (user.isEmpty()) {
+            return goToError(model, task, "/index", "Ошибка! Пользователь не найден в базе!");
+        }
+        task.setUser(user.get());
         Optional<Priority> priority = priorityService.findById(priorityId);
+        if (priority.isEmpty()) {
+            return goToError(
+                    model,
+                    task,
+                    "/index",
+                    "Ошибка! Выбранный приоритет не найден в базе!"
+            );
+        }
         priority.ifPresent(x -> task.setPriority(priority.get()));
         setCategoriesFromChecks(task, checks);
         Optional<Task> task1 = taskService.create(task);
-        if (task1.isPresent()) {
-            return "redirect:/index";
+        if (task1.isEmpty()) {
+            return goToError(model, task, "/index", "Ошибка! Не удалось создать задачу.");
         }
+        return "redirect:/index";
+    }
+
+    private String goToError(Model model, Task task, String link, String message) {
         model.addAttribute("task", task);
-        model.addAttribute("link", "/index");
-        model.addAttribute("error", "Ошибка! Не удалось создать задачу.");
+        model.addAttribute("link", link);
+        model.addAttribute("error", message);
         return "error";
     }
 
     private void setCategoriesFromChecks(Task task, int[] checks) {
-        if (checks != null) {
-            List<Category> categories = new ArrayList<>();
+        if (checks == null) {
+            checks = new int[0];
+        }
+        List<Category> categories = categoryService.findByIds(checks);
+            /*
             for (int check: checks) {
                 Optional<Category> category = categoryService.findById(check);
                 category.ifPresent(categories::add);
             }
-            task.setCategories(categories);
-        }
+             */
+        task.setCategories(categories);
     }
 
     /**
@@ -162,14 +183,16 @@ public class TaskController {
     @GetMapping("/formView/{Id}")
     public String formView(Model model, @PathVariable("Id") int id) {
         Optional<Task> task = taskService.findById(id);
-        if (task.isPresent()) {
-            model.addAttribute("task", task.get());
-            return "view";
+        if (task.isEmpty()) {
+            return goToError(
+                    model,
+                    null,
+                    "/index",
+                    "Ошибка! Задача c id=" + id + " не существует."
+            );
         }
-        model.addAttribute("link", "/index");
-        model.addAttribute("error", "Ошибка! Задача c id="
-                + id + " не существует.");
-        return "error";
+        model.addAttribute("task", task.get());
+        return "view";
     }
 
     /**
@@ -182,10 +205,7 @@ public class TaskController {
         if (taskService.delete(task.getId())) {
             return "redirect:/index";
         }
-        model.addAttribute("task", task);
-        model.addAttribute("link", "/view");
-        model.addAttribute("error", "Ошибка! Задача не удалена.");
-        return "error";
+        return goToError(model, task, "/view", "Ошибка! Задача не удалена.");
     }
 
     /**
@@ -200,10 +220,7 @@ public class TaskController {
         if (taskService.updateDone(task)) {
             return "redirect:/index";
         }
-        model.addAttribute("task", task);
-        model.addAttribute("link", "/view");
-        model.addAttribute("error", "Ошибка! Не удалось установить статус задачи.");
-        return "error";
+        return goToError(model, task, "/view", "Ошибка! Не удалось установить статус задачи.");
     }
 
     /**
@@ -218,11 +235,32 @@ public class TaskController {
     ) {
         model.addAttribute("task", task);
         List<Priority> priorities = priorityService.findAll();
+        if (priorities == null || priorities.size() == 0) {
+            return goToError(model, null, "/index", "Таблица приоритетов пуста!");
+        }
         model.addAttribute("priorities", priorities);
         int i = task.getPriority().getId();
         model.addAttribute("priority_id", i);
         List<Category> categories = categoryService.findAll();
+        if (categories == null || categories.size() == 0) {
+            return goToError(model, null, "/index", "Таблица категорий задач пуста!");
+        }
         model.addAttribute("categories", categories);
+        List<Boolean> categoriesChecked = getCategoriesChecked(checks, categories);
+        model.addAttribute("categories_checked", categoriesChecked);
+        return "edit";
+    }
+
+    /**
+     * Вспомогательная функция. Формирует список состояния checked
+     * для элемента input списка categories.
+     * @param checks - список идентификаторов выбранных их списка categories.
+     * @param categories - список категорий задач.
+     * @return {@link java.util.List<Boolean>} - список состояний.
+     * true - помечен==выбран,
+     * false - не выбран.
+     */
+    private List<Boolean> getCategoriesChecked(int[] checks, List<Category> categories) {
         List<Boolean> categoriesChecked = new ArrayList<>();
         int index = 0;
         for (Category category: categories) {
@@ -235,8 +273,7 @@ public class TaskController {
             }
             categoriesChecked.add(res);
         }
-        model.addAttribute("categories_checked", categoriesChecked);
-        return "edit";
+        return categoriesChecked;
     }
 
     /**
@@ -252,17 +289,29 @@ public class TaskController {
             @RequestParam("priority_id") int priorityId,
             @RequestParam(value = "checks", required = false) int[] checks
     ) {
-        User user = (User) session.getAttribute("user");
-        task.setUser(userService.findById(user.getId()).orElse(null));
+        Optional<User>  user = userService.findById(((User) session.getAttribute("user")).getId());
+        if (user.isEmpty()) {
+            return goToError(model,
+                    task,
+                    "/index",
+                    "Ошибка! Пользователь не найден в базе!"
+            );
+        }
+        task.setUser(user.orElse(null));
         Optional<Priority> priority = priorityService.findById(priorityId);
+        if (priority.isEmpty()) {
+            return goToError(
+                    model,
+                    task,
+                    "/index",
+                    "Ошибка! Выбранный приоритет не найден в базе!"
+            );
+        }
         priority.ifPresent(x -> task.setPriority(priority.get()));
         setCategoriesFromChecks(task, checks);
         if (taskService.update(task)) {
             return "redirect:/index";
         }
-        model.addAttribute("task", task);
-        model.addAttribute("link", "/edit");
-        model.addAttribute("error", "Ошибка! Не удалось сохранить изменения.");
-        return "error";
+        return goToError(model, task, "/edit", "Ошибка! Не удалось сохранить изменения.");
     }
 }

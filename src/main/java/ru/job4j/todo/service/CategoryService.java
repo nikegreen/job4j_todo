@@ -28,4 +28,13 @@ public class CategoryService {
     public Optional<Category> findById(int id) {
         return categoryStore.findById(id);
     }
+
+    /**
+     * Список всех категорий отсортированных по id.
+     * @param ids массив выбранных идентификаторов категорий.
+     * @return список выбранных категорий.
+     */
+    public List<Category> findByIds(int[] ids) {
+        return categoryStore.findByIds(ids);
+    }
 }
