@@ -63,14 +63,12 @@ public class TaskController {
             return goToError(model, null, "/index", "Таблица приоритетов пуста!");
         }
         model.addAttribute("priorities", priorities);
-        Priority priority = priorities.get(0);
-        model.addAttribute("priority_id", priority.getId());
+        model.addAttribute("priority_id", 0);
         Task task = new Task();
         task.setDescription("description");
         task.setCreated(LocalDateTime.now());
         task.setDone(false);
         task.setUser(user);
-        task.setPriority(priority);
         task.setCategories(new ArrayList<>());
         model.addAttribute("task", task);
         List<Category> categories = categoryService.findAll();
@@ -117,6 +115,18 @@ public class TaskController {
         return "redirect:/index";
     }
 
+    /**
+     * <p>Переход на страницу ошибки.</p>
+     * Передадся данные в форму через:
+     * @param model тип {org.springframework.ui.Model},
+     * @param task тип {ru.job4j.model.Task} данные задачи.
+     * @param link тип {@link java.lang.String} содержит ссылку
+     *             страницы на которую надо перейти после страницы
+     *             с ошибкой.
+     * @param message тип {@link java.lang.String} строка с сообщением
+     *                об ошибке.
+     * @return тип {@link java.lang.String} = "error".
+     */
     private String goToError(Model model, Task task, String link, String message) {
         model.addAttribute("task", task);
         model.addAttribute("link", link);
@@ -129,12 +139,6 @@ public class TaskController {
             checks = new int[0];
         }
         List<Category> categories = categoryService.findByIds(checks);
-            /*
-            for (int check: checks) {
-                Optional<Category> category = categoryService.findById(check);
-                category.ifPresent(categories::add);
-            }
-             */
         task.setCategories(categories);
     }
 

@@ -11,6 +11,11 @@
     <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
 
     <title>To Do</title>
+    <script>
+        function selectChange() {
+            document.getElementById('button_save').disabled = (document.getElementById('priority_id').selectedIndex==0);
+        }
+    </script>
 </head>
 <body>
         <header>
@@ -77,7 +82,8 @@
                             </div>
                             <div class="form-group">
                                 <label for="priority_id">Приоритет:</label>
-                                <select name="priority_id" id="priority_id" th:if="${priorities!=null}">
+                                <select name="priority_id" id="priority_id" onchange="selectChange()" th:if="${priorities!=null}">
+                                    <option value="0" disabled selected>выберите приоритет</option>
                                     <option th:each="priority1: ${priorities}" th:value="${priority1.id}"  th:text="${priority1.name}">
                                     </option>
                                 </select>
@@ -91,7 +97,7 @@
                                 </th:block>
                                 <label th:text="${'.'}"></label>
                             </div>
-                            <button type="submit" class="btn btn-primary">Сохранить</button>
+                            <button type="submit" class="btn btn-primary" id="button_save" disabled>Сохранить</button>
                         </form>
                     </div>
                 </div>
