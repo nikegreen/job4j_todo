@@ -67,7 +67,7 @@
             <div class="form-group">
               <label for="created1">Дата и время создания:</label>
               <!--<input type="datetime-local" class="form-control" required name="created" id="created" th:field="*{created}">-->
-              <label class="form-control" id="created1" th:text="*{created}"></label>
+              <label class="form-control" id="created1" th:text="*{createdToString()}"></label>
               <input type="hidden" name="created" id="created" th:field="*{created}">
             </div>
             <div class="form-group">
@@ -116,6 +116,7 @@
                 <input type="hidden" name="user.id" id="user.id"  th:field="*{user.id}">
                 <input type="hidden" name="user.name" id="user.name"  th:field="*{user.name}">
                 <input type="hidden" name="user.login" id="user.login"  th:field="*{user.login}">
+                <input type="hidden" name="user.zone" id="user.zone"  th:field="*{user.zone}">
               </th:block>
             </div>
             <button type="submit" formaction="/formDone" class="btn btn-primary">Выполнено</button>

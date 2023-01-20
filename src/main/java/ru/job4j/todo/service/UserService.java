@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.job4j.todo.model.User;
 import ru.job4j.todo.store.UserStore;
-import java.util.List;
-import java.util.Optional;
+import ru.job4j.todo.view.UserTimeZone;
+
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -61,5 +62,20 @@ public class UserService {
      */
     public Optional<User> findByLoginAndPassword(String login, String password) {
         return userStore.findByLoginAndPassword(login, password);
+    }
+
+    /**
+     * Список всех тайм зон.
+     * @return {java.util.List<ru.job4j.view.UserTimeZone>}
+     */
+    public List<UserTimeZone> findAllTimeZone() {
+        ArrayList<UserTimeZone> zones = new ArrayList<UserTimeZone>();
+        Arrays.stream(TimeZone.getAvailableIDs()).forEach(x -> {
+            UserTimeZone userTimeZone = new UserTimeZone();
+            userTimeZone.setId(x);
+            userTimeZone.setName(TimeZone.getTimeZone(x).getDisplayName());
+            zones.add(userTimeZone);
+        });
+        return zones;
     }
 }

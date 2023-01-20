@@ -37,15 +37,15 @@ public class CrudRepository {
     }
 
     public <T> Optional<T> optional(String query, Class<T> cl, Map<String, Object> args) {
-        Function<Session, Optional<T>> command = session -> {
+        Function<Session, T> command = session -> {
             Query<T> sq = session
                     .createQuery(query, cl);
             for (Map.Entry<String, Object> arg : args.entrySet()) {
                 sq.setParameter(arg.getKey(), arg.getValue());
             }
-            return Optional.ofNullable(sq.getSingleResult());
+            return sq.getSingleResult();
         };
-        return tx(command);
+        return Optional.ofNullable(tx(command));
     }
 
     public <T> List<T> query(String query, Class<T> cl) {
@@ -79,8 +79,8 @@ public class CrudRepository {
                 if (tx.isActive()) {
                     tx.rollback();
                 }
-                throw e;
             }
         }
+        return null;
     }
 }

@@ -9,8 +9,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import ru.job4j.todo.model.User;
 import ru.job4j.todo.service.UserService;
+import ru.job4j.todo.view.UserTimeZone;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 
 /**
  * <p>TaskController class. Spring boot controller</p>
@@ -29,7 +32,10 @@ public class UserController {
      * @return a {@link java.lang.String} object.
      */
     @GetMapping("/pages/registration")
-    public String registration() {
+    public String registration(Model model) {
+        List<UserTimeZone> timeZones = userService.findAllTimeZone();
+        model.addAttribute("time_zones", timeZones);
+        model.addAttribute("zone_id", TimeZone.getDefault().getID());
         return "registration";
     }
 

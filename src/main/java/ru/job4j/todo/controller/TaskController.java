@@ -1,5 +1,6 @@
 package ru.job4j.todo.controller;
 
+import com.sun.istack.NotNull;
 import lombok.RequiredArgsConstructor;
 import net.jcip.annotations.ThreadSafe;
 import org.springframework.stereotype.Controller;
@@ -15,9 +16,7 @@ import ru.job4j.todo.service.TaskService;
 import ru.job4j.todo.service.UserService;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * <p>TaskController class. Spring boot controller</p>
@@ -118,8 +117,8 @@ public class TaskController {
     /**
      * <p>Переход на страницу ошибки.</p>
      * Передадся данные в форму через:
-     * @param model тип {org.springframework.ui.Model},
-     * @param task тип {ru.job4j.model.Task} данные задачи.
+     * @param model тип {@link  org.springframework.ui.Model},
+     * @param task тип {@link  ru.job4j.todo.model.Task} данные задачи.
      * @param link тип {@link java.lang.String} содержит ссылку
      *             страницы на которую надо перейти после страницы
      *             с ошибкой.
@@ -134,7 +133,13 @@ public class TaskController {
         return "error";
     }
 
-    private void setCategoriesFromChecks(Task task, int[] checks) {
+    /**
+     * устанавливает поле Categories в модели {@link ru.job4j.todo.model.Task} task
+     * выбирает отмеченные чекбоксы на форме (массив checks)
+     * @param task - задача.
+     * @param checks - массив id из Categories помеченных в форме.
+     */
+    private void setCategoriesFromChecks(@NotNull Task task, int[] checks) {
         if (checks == null) {
             checks = new int[0];
         }

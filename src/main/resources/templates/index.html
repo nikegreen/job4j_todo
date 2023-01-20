@@ -92,7 +92,7 @@
                    </a>
                   </td>
                   <td>
-                    <a th:href="'/formView/'+${task.id}" th:text="${#temporals.format(task.created, 'dd-MM-yyyy HH:mm')}">
+                    <a th:href="'/formView/'+${task.id}" th:text="${task.createdToString()}">
                     </a>
                   </td>
                   <td>

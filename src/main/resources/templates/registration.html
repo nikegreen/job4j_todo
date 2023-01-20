@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
+
+    <!-- Bootstrap CSS
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
@@ -14,9 +16,10 @@
             integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+             -->
+    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-    <title>Кинотеатр Job4j - регистрация</title>
+    <title>To Do - регистрация</title>
 </head>
 <body>
 <header>
@@ -91,6 +94,14 @@
                             <label for="password">пароль</label>
                             <input type="password" class="form-control" required name="password" id="password">
                         </div>
+                        <div class="form-group">
+                            <label for="zone">Часовой пояс</label>
+                            <select id="zone" name="zone">
+                                <th:block th:each="tz: ${time_zones}">
+                                    <option th:value="${tz.id}" th:text="${tz.name}" th:selected="${tz.id==zone_id}"></option>
+                                </th:block>
+                            </select>
+                        </div>
                         <button type="submit" class="btn btn-primary">Зарегать</button>
                     </form>
                 </div>
@@ -107,6 +118,6 @@
         <p class="mb-0">Предложения по работе - <a href="https://ekaterinburg.hh.ru/resume/a9f5ffddff01375f8a0039ed1f544d49736b74" target="_blank">посмотреть моё резюме</a> исходный текст проекта <a href="https://github.com/nikegreen/job4j_todo" target="_blank">перейти на проект</a>.</p>
     </div>
 </footer>
-<script src="bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
