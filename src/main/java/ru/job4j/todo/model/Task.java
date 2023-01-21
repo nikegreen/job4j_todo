@@ -1,17 +1,16 @@
 package ru.job4j.todo.model;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.TimeZone;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.EqualsAndHashCode.Include;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.job4j.todo.util.LdtConvert;
+
 import javax.persistence.*;
 
 @Entity
@@ -51,14 +50,6 @@ public class Task {
      * @return {@link java.lang.String} в формате: HH:mm yyyy-MM-dd
      */
     public String createdToString() {
-        String timeZone = (getUser() == null
-                || getUser().getZone() == null
-                || "".equals(getUser().getZone()))
-                ? TimeZone.getDefault().getID() : getUser().getZone();
-        ZoneId zoneId = ZoneId.of(TimeZone.getDefault().getID());
-        ZonedDateTime zdtAtZoneId = getCreated().atZone(zoneId);
-        return zdtAtZoneId.withZoneSameInstant(
-                ZoneId.of(timeZone)
-        ).format(DateTimeFormatter.ofPattern("HH:mm yyyy-MM-dd"));
+        return LdtConvert.toStringWithTimeZone(getUser().getZone(), getCreated());
     }
 }
